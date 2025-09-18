@@ -10,6 +10,17 @@ const nextConfig: NextConfig = {
         '*.preview.app.github.dev'
       ]
     }
+  },
+
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: "img.clerk.com",
+        port: '',
+        pathname: '/**'
+      }
+    ]
   }
 };
 
