@@ -31,7 +31,7 @@ function UserSearch({
    
 
     const handleSelectUser = (user: (typeof searchResults)[0]) => {
-        onSelectUser(user);
+        onSelectUser?.(user);
         setSearchTerm("");
     };
 

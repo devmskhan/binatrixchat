@@ -14,11 +14,33 @@ function Dashboard() {
   const { setOpen } = useSidebar();
 
   const handleCall = () => {
-    console.log("Calling...");
+    if (!channel) return;
+    router.push(`dashboard/video-call/$(cha)`)
   };
 
-  const handleLeaveChat = () => {
-    console.log("Leaving chat...");
+  const handleLeaveChat = async () => {
+    if (!channel || !user?.id) {
+      console.log("No channel or user to leave chat");
+      return;
+    }
+
+    //Confirm before leaving
+    const confirmLeave = window.confirm("Are you sure you want to leave this chat?");
+    if (!confirmLeave) return;
+
+    try {
+      //Remove current user from the channel using Stream's removeChat method
+      await channel.removeMembers([user.id]);
+
+      //Clear the active channel in the chat context
+      setActiveChannel(undefined);
+
+      //Redirect to dashboard after leaving the chat
+      router.push("/dashboard");
+    } catch (error) {
+      console.error("Error leaving chat:", error);
+      alert("Failed to leave the chat. Please try again.");
+    }
   };
 
   return (
@@ -47,12 +69,14 @@ function Dashboard() {
                 </Button>
               </div>
 
+              </div>
+
               <MessageList />
 
               <div className="sticky bottom-0 w-full bg-background pt-4">
                 <MessageInput />
               </div>
-            </div>
+            
           </Window>
           <Thread />
         </Channel>

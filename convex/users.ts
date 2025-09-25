@@ -5,6 +5,8 @@ import { v } from "convex/values";
 export const getUserByClerkId = query({
   args: { userId: v.string() },
   handler: async (ctx, { userId }) => {
+    if (!userId) return null;
+
     return await ctx.db
       .query("users")
       .withIndex("by_UserId", (q) => q.eq("userId", userId))
@@ -25,8 +27,9 @@ export const upsertUser = mutation({
       .query("users")
       .withIndex("by_UserId", (q) => q.eq("userId", userId))
       .first();
+
     if (existingUser) {
-      await ctx.db.patch(existingUser._id, { name,imageUrl });
+      await ctx.db.patch(existingUser._id, { name, imageUrl });
       return existingUser._id;
     }
 

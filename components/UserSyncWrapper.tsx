@@ -14,7 +14,7 @@ function UserSyncWrapper({children}: {children: React.ReactNode}) {
     const [error, setError] = useState<string | null>(null);
 
     // Convex mutation to sync user data
-    const createOrderUpdateUser = useMutation(api.users.upsertUser);
+    const createOrUpdateUser = useMutation(api.users.upsertUser);
 
     const syncUser = useCallback(async () => {
         if (!user?.id) return;
@@ -25,7 +25,7 @@ function UserSyncWrapper({children}: {children: React.ReactNode}) {
 
             const tokenProvider = async () => {
                 if (!user?.id) {
-                    throw new Error("User is not autjehenticated");
+                    throw new Error("User is not authenticated");
                 }
 
                 const token = await createToken(user.id);
@@ -33,14 +33,14 @@ function UserSyncWrapper({children}: {children: React.ReactNode}) {
             }
 
             // 1.Save or update user in Convex
-            await createOrderUpdateUser({
+            await createOrUpdateUser({
                 userId: user.id,
                 name:
                 user.fullName ||
                 user.firstName ||
                 user.emailAddresses[0]?.emailAddress ||
                 "Unknown User",
-                email: user.primaryEmailAddress?.emailAddress || "",
+                email: user.emailAddresses[0]?.emailAddress || "",
                 imageUrl: user.imageUrl || "",
             });
 
@@ -66,7 +66,7 @@ function UserSyncWrapper({children}: {children: React.ReactNode}) {
             setIsLoading(false);
         }
 
-    }, [user, createOrderUpdateUser]);
+    }, [user, createOrUpdateUser]);
 
     const disconnectUser = useCallback(async () => {
         try {
@@ -77,7 +77,7 @@ function UserSyncWrapper({children}: {children: React.ReactNode}) {
     }, []);
 
     useEffect(() => {
-        if (isUserLoaded) return;
+        if (!isUserLoaded) return;
         
         if (user) {
             syncUser();
